@@ -119,7 +119,6 @@ fi
 # enable custom command
 if [ -d ${HOME}/dotfiles/bin/ ]; then
  for c in $(ls -aAl --format=single-column ${HOME}/dotfiles/bin/); do
-  echo $c
   . "${HOME}/dotfiles/bin/$c"
  done
 fi
