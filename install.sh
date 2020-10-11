@@ -13,13 +13,12 @@ fi
 # TODO -> リンク切れだったらどうする
 # TODO -> ディレクトリでもちゃんと動くか確認
 for i in $(ls -aAl --format=single-column ${DOTFILES}); do
+
  #back up
- #is exist file ? 
  if [ -f "${HOME}/$i" -o -d "${HOME}/$i" ]; then
   cp -f "${HOME}/$i" "${BACKUP}"
   rm "${HOME}/$i"
 
- #is exist link and not find path? 
  elif [ -L "${HOME}/$i" ]; then
   #元のファイルの場所を検索してバックアップする TODO
   echo $i with link
@@ -32,8 +31,8 @@ done
 . "${SCRIPT_DIR}/custom/set_home.sh"
 
 #3. my custom command
-for c in "${SCRIPT_DIR}/custom/command/*.sh"; do
- echo $c
- . $c
+for c in $(ls -aAl --format=single-column ${SCRIPT_DIR}/custom/command/); do
+ . "${SCRIPT_DIR}/custom/command/$c"
+ 
 done
 
