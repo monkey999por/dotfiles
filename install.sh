@@ -31,8 +31,8 @@ done
 . "${SCRIPT_DIR}/custom/set_home.sh"
 
 #3. my custom command
-for c in $(ls -aAl --format=single-column ${SCRIPT_DIR}/custom/command/); do
- . "${SCRIPT_DIR}/custom/command/$c"
+for c in $(ls -aAl --format=single-column ${SCRIPT_DIR}/bin/); do
+ . "${SCRIPT_DIR}/bin/$c"
  
 done
 
