@@ -1,57 +1,39 @@
 #!/bin/bash
-cd ~/dotfiles
 
-set DOTFILES="~/dotfiles/dotfiles/"
+SCRIPT_DIR="${HOME}/dotfiles"
+DOTFILES="${SCRIPT_DIR}/dotfiles"
+BACKUP="${SCRIPT_DIR}/bk_defualt/$(date "+%Y%m%d_%H%M%S")"
 
-# set symbolic link
-# バックアップして書き込み権限をなくす(削除もできないようにできる？)
-if [ ! -d backup_defualt ]; then
- mkdir backup_defualt
+#1. set symbolic link
+# TODO -> バックアップして書き込み権限をなくす(削除もできないようにできる？)
+if [ ! -d ${BACKUP} ]; then
+ mkdir -p ${BACKUP}
 fi
-
 
 # TODO -> リンク切れだったらどうする
 # TODO -> ディレクトリでもちゃんと動くか確認
-cd ${DOTFILES}
-for i in .??*; do
- ln -snfv ${DOTFILES}/$i ~/$i
- if [ -e ~/$i ]; then
-  echo ~/$i
-  ln -snfv $i ~/$i
+for i in $(ls -aAl --format=single-column ${DOTFILES}); do
+ #back up
+ #is exist file ? 
+ if [ -f "${HOME}/$i" -o -d "${HOME}/$i" ]; then
+  cp -f "${HOME}/$i" "${BACKUP}"
+  rm "${HOME}/$i"
+
+ #is exist link and not find path? 
+ elif [ -L "${HOME}/$i" ]; then
+  #元のファイルの場所を検索してバックアップする TODO
+  echo $i with link
  fi
- # ln -snfv dotfiles/$i ~/$
+
+ ln -snfv "${DOTFILES}/$i" "${HOME}/$i"
 done
-cd ..
 
-return
+#2. make Directory my workspace(like windows)
+. "${SCRIPT_DIR}/custom/set_home.sh"
 
-cp ~/.bash_aliases dotfiles/backup_defualt/
-cp ~/.inputrc dotfiles/backup_defualt/
-cp ~/.gitconfig dotfiles/backup_defualt/
-
-rm  ~/.bash_aliases
-rm  ~/.inputrc
-rm  ~/.gitconfig
-
-#2. make symbolic link : TODO -> use for loop
-if [ ! -L ~/.bash_aliases ]; then
- ln -s dotfiles/.bash_aliases ~/.bash_aliases
-fi
-
-if [ ! -L ~/.inputrc ]; then
- ln -s dotfiles/.inputrc ~/.inputrc
-fi
-
-if [ ! -L ~/.gitconfig ]; then
- ln -s dotfiles/.gitconfig ~/.gitconfig
-fi
-
-#3. make Directory my workspace(like windows)
-. script/mkdir_in_HOME.sh
-
-# ext
-#read custom command
-for i in dotfiles/custom_command/*.sh; do
- . $i
+#3. my custom command
+for c in "${SCRIPT_DIR}/custom/command/*.sh"; do
+ echo $c
+ . $c
 done
 
