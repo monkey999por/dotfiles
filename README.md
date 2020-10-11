@@ -7,7 +7,7 @@ Mainly set aliases
 cd ~
 git checkout https://github.com/monkey999por/dotfiles.git
 cd dotfiles
-source dotfiles
+source install.sh
 ```
 
 # References(Thanks to)
