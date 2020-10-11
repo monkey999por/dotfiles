@@ -1,14 +1,37 @@
 #!/bin/bash
-cd ~
+cd ~/dotfiles
 
-# 1. bask up defualt setting
-if [ ! -d dotfiles/backup_defualt ]; then
- mkdir dotfiles/backup_defualt
+set DOTFILES="~/dotfiles/dotfiles/"
+
+# set symbolic link
+# バックアップして書き込み権限をなくす(削除もできないようにできる？)
+if [ ! -d backup_defualt ]; then
+ mkdir backup_defualt
 fi
+
+
+# TODO -> リンク切れだったらどうする
+# TODO -> ディレクトリでもちゃんと動くか確認
+cd ${DOTFILES}
+for i in .??*; do
+ ln -snfv ${DOTFILES}/$i ~/$i
+ if [ -e ~/$i ]; then
+  echo ~/$i
+  ln -snfv $i ~/$i
+ fi
+ # ln -snfv dotfiles/$i ~/$
+done
+cd ..
+
+return
 
 cp ~/.bash_aliases dotfiles/backup_defualt/
 cp ~/.inputrc dotfiles/backup_defualt/
 cp ~/.gitconfig dotfiles/backup_defualt/
+
+rm  ~/.bash_aliases
+rm  ~/.inputrc
+rm  ~/.gitconfig
 
 #2. make symbolic link : TODO -> use for loop
 if [ ! -L ~/.bash_aliases ]; then
@@ -23,21 +46,12 @@ if [ ! -L ~/.gitconfig ]; then
  ln -s dotfiles/.gitconfig ~/.gitconfig
 fi
 
-#3. make Directory my workspace
-if [ ! -d ~/document.d ]; then
- mkdir ~/document.d
-fi
+#3. make Directory my workspace(like windows)
+. script/mkdir_in_HOME.sh
 
-if [ ! -d ~/develop.d ]; then
- mkdir ~/develop.d
-fi
-
-if [ ! -d ~/downloads.d ]; then
- mkdir ~/downloads.d
-fi
-
-if [ ! -d ~/back_up.d/defalut_dotfiles.d/ ]; then
- mkdir -p ~/back_up.d/defalut_dotfiles.d/
-fi
-
+# ext
+#read custom command
+for i in dotfiles/custom_command/*.sh; do
+ . $i
+done
 

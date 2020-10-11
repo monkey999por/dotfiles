@@ -1,0 +1,16 @@
+■初回アクセス時
+1. linux起動
+2. dotfilesをgitからclone
+3. dotfiles/install.shを実行
+
+■二回目以降
+特に何もしなくて良い
+
+■dotfilesを更新したとき
+1.dotfilesをgit pull
+2.linuxを再起動
+
+
+
+
+
