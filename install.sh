@@ -33,6 +33,9 @@ done
 #3. my custom command
 for c in $(ls -aAl --format=single-column ${SCRIPT_DIR}/bin/); do
  . "${SCRIPT_DIR}/bin/$c"
- 
 done
 
+unset c
+unset SCRIPT_DIR
+unset DOTFILES
+unset BACKUP
