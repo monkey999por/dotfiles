@@ -122,3 +122,6 @@ if [ -d ${HOME}/dotfiles/bin/ ]; then
   . "${HOME}/dotfiles/bin/$c"
  done
 fi
+
+# custom prompt
+export PS1="\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u\[\033[01;35m\]@\[\033[01;36m\]\h\[\033[00m\]: \[\033[01;34m\]\w\[\033[00m\]\\n`echo -e '\U1F49B\U1F499\U1F49A\U1F49C'` "
