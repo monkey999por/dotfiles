@@ -19,7 +19,7 @@ function ej () {
 
     local result=$(curl -L "https://script.google.com/macros/s/AKfycbyWDoCWmfmiGPA7JqGpH9_ec2f90tlIFRnKW2JHEWRfyQtXpahd/exec?text=\"$(echo ${__str}| sed "s/ /+/g")\"&source=en&target=ja")
     echo -e "\n"
-    echo "${@}"
+    echo "${__str}"
     echo -e "${result}\n"
 }
 
