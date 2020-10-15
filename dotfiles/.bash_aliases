@@ -1,18 +1,20 @@
-#!/bin/bash
+#! /bin/bash
 
-# ~/.bash_aliases に配置
+# ~/.bash_aliases
 
 # ll
 alias l='ls -alF'
 
-# cd系
+# cd
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
 alias .....='cd ../../../..'
 
-#windows cmd.exe的な
+# windows command prompt like
 alias cls='clear'
 
-#サクラエディタ　WSLならこういうこともできる
 alias s='sakura.exe'
+
+# man page as japanese
+alias manj="man --locale=ja_JP.UTF-8"
