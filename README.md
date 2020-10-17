@@ -1,6 +1,5 @@
 # dotfiles
-dotfiles with Ubuntu  
-Mainly set aliases
+dotfiles with wsl for Ubuntu-18.04
 
 # Usage
 ```shell
