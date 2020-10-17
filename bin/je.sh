@@ -4,17 +4,19 @@
 # https://qiita.com/satto_sann/items/be4177360a0bc3691fdf
 # https://script.google.com/home?hl=ja
 function je () {
- if [ -z "${@}" ]; then
-  echo it has no argument
-  return
- fi
+    if [ -p /dev/stdin ]; then
+        if [ -z "${@}" ]; then 
+            local __str=`cat -`
+        fi
+    else
+        local __str=$@
+    fi
 
- chrome.exe "https://translate.google.co.jp/?hl=ja#view=home&op=translate&sl=ja&tl=en&text=\"$(echo ${@}| sed "s/ /+/g")\""
+    if [ -z "${__str}" ]; then
+        echo it has no argument
+        return
+    fi
 
- #local result=$(curl -L "https://script.google.com/macros/s/AKfycbyWDoCWmfmiGPA7JqGpH9_ec2f90tlIFRnKW2JHEWRfyQtXpahd/exec?text=\"$(echo ${@}| sed "s/ /+/g")\"&source=ja&target=en")
- #echo -e "\n"
- #echo "${@}"
- #echo -e "${result}\n"
-
+    chrome.exe "https://translate.google.co.jp/?hl=ja#view=home&op=translate&sl=ja&tl=en&text=\"$(echo ${__str}| sed "s/ /+/g")\""
 }
 
