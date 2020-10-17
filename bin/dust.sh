@@ -19,32 +19,28 @@ function dust () {
         cd $p
     done
 
-    #バックアップ先
-    echo $(${DUSTBOX}/$(pwd | sed "s/^\///g" ))
+    #バックアップ先ディレクトリ
+    backup_path=${DUSTBOX}/$(pwd | sed "s/^\///g" )
+    echo "back up: ${backup_path}"
+    mkdir -p ${backup_path}
 
     #削除対象
-    echo $(pwd)/$(basename ${1})
-    return 
-    
-    
-
-
-    local destination=${DUSTBOX}/$(dirname ${1} |sed "s/^\///g")
-    mkdir -p ${destination}
+    local remove_target="$(pwd)/$(basename ${1})"
+    echo "remove target: ${remove_target}"
     
     if [ -h "${1}" ]; then
         cp --attributes-only "${1}" "${DUSTBOX}/"
         rm -f "${1}"
-    elif [ -f "${1}" ]; then
-        cp "${1}" "${destination}/"
-        rm -f "${1}"
-    elif [ -d "${1}" ]; then
-        cp -r "${1}" "${destination}/"
-        rm -r "${1}"
+    elif [ -f "${remove_target}" ]; then
+        cp -f "${remove_target}" "${backup_path}/"
+        rm -f "${remove_target}"
+    elif [ -d "${remove_target}" ]; then
+        cp -rf "${remove_target}" "${backup_path}/"
+        rm -r "${remove_target}"
     else 
         echo -e "can't delete this. it is not file or directory or symbolic link.\nuse \"rm\" command."
     fi
-
-    tree ${destination}
+    echo -e "\n"
+    tree ${backup_path}
 
 }

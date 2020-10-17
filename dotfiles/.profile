@@ -26,4 +26,4 @@ if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin:$PATH"
 fi
 
-export DUSTBOX="${HOME}/Main.d/DustBox.d/"
+export DUSTBOX="${HOME}/Main.d/DustBox.d"
