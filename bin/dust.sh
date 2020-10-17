@@ -9,6 +9,8 @@ function dust () {
         echo not defined '$DUSTBOX'
         return
     elif [ -z ${1} ]; then
+        echo "it has no argument"
+        echo "syntax: \$dust {File or Directory}"
         return
     fi
     
