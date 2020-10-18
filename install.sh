@@ -2,7 +2,7 @@
 
 SCRIPT_DIR="${HOME}/dotfiles"
 DOTFILES="${SCRIPT_DIR}/dotfiles"
-BACKUP="${SCRIPT_DIR}/bk_defualt/$(date "+%Y%m%d_%H%M%S")"
+BACKUP="${SCRIPT_DIR}/bk_defualt/$(date "+%Y_%m_%d_%H_%M_%S")"
 
 #1. set symbolic link
 # TODO -> バックアップして書き込み権限をなくす(削除もできないようにできる？)
