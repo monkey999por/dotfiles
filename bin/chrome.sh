@@ -7,6 +7,7 @@ function chrome_ () {
     if [ -z "${@}" ]; then 
         chrome.exe
     else
+	#円マークはエスケープが必要だが、円マーク二つのエスケープのやり方がわからんので保留
         local file=$(echo $(wslpath -a -w ${@}) | sed -e "s/\//\\\\/g" )
         echo $file  
         return

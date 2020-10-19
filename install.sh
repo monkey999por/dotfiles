@@ -35,6 +35,12 @@ for c in $(ls -Al --format=single-column ${SCRIPT_DIR}/bin/); do
  . "${SCRIPT_DIR}/bin/$c"
 done
 
+#install tools
+sudo apt install unzip
+
+#install extentions
+curl https://raw.githubusercontent.com/scopatz/nanorc/master/install.sh | sh
+
 unset c
 unset SCRIPT_DIR
 unset DOTFILES
