@@ -1,3 +1,14 @@
+# show "man 5 nanorc"
+set autoindent
+set linenumbers
+set mouse
+set softwrap
+set backup
+set backupdir ~/Main.d/DustBox.d
+
+
+# {lang}.nanorc files that have improved definitions of syntax highlighting for various languages.
+# ref https://github.com/scopatz/nanorc
 include "~/.nano/apacheconf.nanorc"
 include "~/.nano/arduino.nanorc"
 include "~/.nano/asciidoc.nanorc"
