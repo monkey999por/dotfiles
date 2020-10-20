@@ -2,5 +2,6 @@
 # these extentions are installed at run "install.sh".
 tree
 unzip
- 
-    　　　
+language-pack-ja
+manpages-ja
+manpages-ja-dev

@@ -51,7 +51,7 @@ if [ ${IS_INSTALL_EXTENTIONS} = "true" ]; then
         if [ -z "${e}" ]; then
             continue
         fi
-        sudo apt install ${e}
+        sudo apt -y install ${e}
     done
 
     #install extentions
