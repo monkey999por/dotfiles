@@ -9,23 +9,23 @@ BACKUP="${SCRIPT_DIR}/bk_defualt/$(date "+%Y_%m_%d_%H_%M_%S")"
 #1. set symbolic link
 # TODO -> バックアップして書き込み権限をなくす(削除もできないようにできる？)
 if [ ! -d ${BACKUP} ]; then
- mkdir -p ${BACKUP}
+    mkdir -p ${BACKUP}
 fi
 
 # TODO -> ディレクトリでもちゃんと動くか確認
 for i in $(ls -Al --format=single-column ${DOTFILES}); do
 
- #back up
- if [ -f "${HOME}/$i" -o -d "${HOME}/$i" ]; then
-  cp -f "${HOME}/$i" "${BACKUP}"
-  rm "${HOME}/$i"
+    #back up
+    if [ -f "${HOME}/$i" -o -d "${HOME}/$i" ]; then
+        cp -f "${HOME}/$i" "${BACKUP}"
+        rm "${HOME}/$i"
 
- elif [ -L "${HOME}/$i" ]; then
-  #元のファイルの場所を検索してバックアップする TODO
-  echo $i with link
- fi
+    elif [ -L "${HOME}/$i" ]; then
+        #元のファイルの場所を検索してバックアップする TODO
+        echo $i with link
+    fi
 
- ln -snfv "${DOTFILES}/$i" "${HOME}/$i"
+    ln -snfv "${DOTFILES}/$i" "${HOME}/$i"
 done
 
 #2. make Directory my workspace(like windows)
@@ -33,7 +33,7 @@ done
 
 #3. my custom command
 for c in $(ls -Al --format=single-column ${SCRIPT_DIR}/bin/); do
- . "${SCRIPT_DIR}/bin/$c"
+    . "${SCRIPT_DIR}/bin/$c"
 done
 
 
