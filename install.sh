@@ -1,5 +1,7 @@
 #!/bin/bash
 
+IS_INSTALL_EXTENTIONS=false
+
 SCRIPT_DIR="${HOME}/dotfiles"
 DOTFILES="${SCRIPT_DIR}/dotfiles"
 BACKUP="${SCRIPT_DIR}/bk_defualt/$(date "+%Y_%m_%d_%H_%M_%S")"
@@ -10,7 +12,6 @@ if [ ! -d ${BACKUP} ]; then
  mkdir -p ${BACKUP}
 fi
 
-# TODO -> リンク切れだったらどうする
 # TODO -> ディレクトリでもちゃんと動くか確認
 for i in $(ls -Al --format=single-column ${DOTFILES}); do
 
@@ -35,13 +36,32 @@ for c in $(ls -Al --format=single-column ${SCRIPT_DIR}/bin/); do
  . "${SCRIPT_DIR}/bin/$c"
 done
 
-#install tools
-sudo apt install unzip
 
-#install extentions
-curl https://raw.githubusercontent.com/scopatz/nanorc/master/install.sh | sh
+
+if [ ${IS_INSTALL_EXTENTIONS} = "true" ]; then
+    #install tools
+    sudo apt update
+    sudo apt upgrade
+    cat ${SCRIPT_DIR}/custom/extentions_list | while read e
+    do
+        if $(echo "${e}" | grep -q --extended-regexp "[#]") ; then
+            continue
+        fi
+
+        if [ -z "${e}" ]; then
+            continue
+        fi
+        sudo apt install ${e}
+    done
+
+    #install extentions
+    #curl https://raw.githubusercontent.com/scopatz/nanorc/master/install.sh | sh
+else
+    echo "skip install extentions command.."
+fi
 
 unset c
+unset e
 unset SCRIPT_DIR
 unset DOTFILES
 unset BACKUP
