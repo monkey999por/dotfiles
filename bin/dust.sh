@@ -48,4 +48,6 @@ function dust () {
     echo -e "\n"
     tree ${backup_path}
 
+    cd "${here}"
+
 }
