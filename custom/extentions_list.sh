@@ -7,7 +7,7 @@ declare -a install_targets=(
     # japanese man page. use 'manj' command. ※manj defined in alias
     "language-pack-ja"
     "manpages-ja"
-
+    "apache2"
     "manpages-ja-dev"
     "make"
     "gcc"
@@ -21,7 +21,7 @@ sudo apt update
 sudo apt upgrade
 
 for i in ${install_targets[@]} ; do
-    sudo apt -y install ${i}
+    sudo apt install ${i}
 done
 
 #curl https://raw.githubusercontent.com/scopatz/nanorc/master/install.sh | sh
