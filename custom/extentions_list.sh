@@ -21,8 +21,7 @@ declare -a install_targets=(
 #sudo apt upgrade
 
 for i in ${install_targets[@]} ; do
-    echo $i
-    #sudo apt -y install ${i}
+    sudo apt -y install ${i}
 done
 
 #curl https://raw.githubusercontent.com/scopatz/nanorc/master/install.sh | sh
