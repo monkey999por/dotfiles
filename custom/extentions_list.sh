@@ -17,8 +17,8 @@ declare -a install_targets=(
 )
 
 # install extentions what is defined in the "install_targets"
-#sudo apt update
-#sudo apt upgrade
+sudo apt update
+sudo apt upgrade
 
 for i in ${install_targets[@]} ; do
     sudo apt -y install ${i}
