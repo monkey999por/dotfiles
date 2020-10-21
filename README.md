@@ -10,7 +10,7 @@ source install.sh
 ```  
 > when you install extentions, you must change `$IS_INSTALL_EXTENTIONS` true (default: false) and after run `install.sh`.  
 ※ `$IS_INSTALL_EXTENTIONS` defined `setting.sh`  
-※ install target extentions list is defined `custom/extentions_list.sh`
+※ install target extentions list is defined `setting.sh`
 
 # References(Thanks to)
 [mathiasbynens's](https://github.com/mathiasbynens) dotfiles repository
