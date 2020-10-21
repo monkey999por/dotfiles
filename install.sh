@@ -1,11 +1,11 @@
 #!/bin/bash
 
-IS_INSTALL_EXTENTIONS=true
-
 SCRIPT_DIR="${HOME}/dotfiles"
 DOTFILES="${SCRIPT_DIR}/dotfiles"
 BACKUP="${SCRIPT_DIR}/bk_defualt/$(date "+%Y_%m_%d_%H_%M_%S")"
 CUSTOM="${SCRIPT_DIR}/custom"
+
+. "${SCRIPT_DIR}/setting.sh"
 
 #1. set symbolic link ~/.XXX -> dotfiles/dotfiles/.XXX
 mkdir -p ${BACKUP}
