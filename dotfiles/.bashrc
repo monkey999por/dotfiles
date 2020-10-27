@@ -135,3 +135,21 @@ GIT_PS1_SHOWSTASHSTATE=1
 
 # custom prompt
 export PS1='\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u\[\033[01;35m\]@\[\033[01;36m\]\h\[\033[00m\]: \[\033[01;34m\]\w\[\033[1;31m\]$(__git_ps1 " (%s)")\[\033[00m\]\n`echo -e "\U1F49B\U1F499\U1F49A\U1F49C"` '
+
+
+# bash parameter completion for the dotnet CLI
+# ref: https://docs.microsoft.com/ja-jp/dotnet/core/tools/enable-tab-autocomplete
+_dotnet_bash_complete()
+{
+  local word=${COMP_WORDS[COMP_CWORD]}
+
+  local completions
+  completions="$(dotnet complete --position "${COMP_POINT}" "${COMP_LINE}" 2>/dev/null)"
+  if [ $? -ne 0 ]; then
+    completions=""
+  fi
+
+  COMPREPLY=( $(compgen -W "$completions" -- "$word") )
+}
+
+complete -f -F _dotnet_bash_complete dotnet
