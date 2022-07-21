@@ -18,4 +18,4 @@ alias cls='clear'
 alias sakura="sakura.exe"
 
 # man page as japanese
-alias manj="man --locale=ja_JP.UTF-8"
+alias mj="man --locale=ja_JP.UTF-8"
