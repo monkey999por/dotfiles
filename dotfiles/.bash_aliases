@@ -3,7 +3,7 @@
 # ~/.bash_aliases
 
 # ll
-alias l='ls -alF'
+alias l='ls -laF --time-style="+%Y-%m-%d %H:%M:%S"'
 
 # cd
 alias ..='cd ..'
