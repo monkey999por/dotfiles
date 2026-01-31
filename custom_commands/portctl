@@ -1,0 +1,197 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# portctl: check/kill process listening on a TCP port
+# Works in bash and zsh (executed as a script).
+# Dependencies: tries lsof first, then ss, then netstat. (macOS/Linux)
+#
+# Usage:
+#   portctl check 3000
+#   portctl pid 3000
+#   portctl kill 3000        # SIGTERM then SIGKILL
+#   portctl kill -9 3000     # SIGKILL only
+#   portctl kill --signal TERM 3000
+
+usage() {
+  cat <<'USAGE'
+Usage:
+  portctl check <port>
+  portctl pid <port>
+  portctl kill [--signal SIG|-9] <port>
+
+Notes:
+  - "check" shows listener(s) if the port is in use.
+  - "pid" prints PID(s) only (space-separated).
+  - "kill" sends SIGTERM by default, waits briefly, then SIGKILL if still alive.
+  - Some processes require sudo to inspect/kill.
+USAGE
+}
+
+need_cmd() { command -v "$1" >/dev/null 2>&1; }
+
+is_port() {
+  [[ "${1:-}" =~ ^[0-9]+$ ]] && [ "$1" -ge 1 ] && [ "$1" -le 65535 ]
+}
+
+# -------- find listeners --------
+# print lines "PID COMMAND" (may be multiple)
+find_listeners() {
+  local port="$1"
+
+  if need_cmd lsof; then
+    # -nP: no DNS / no service name, -iTCP:PORT: target, -sTCP:LISTEN: only listeners
+    # Output includes PID and COMMAND in columns.
+    lsof -nP -iTCP:"$port" -sTCP:LISTEN 2>/dev/null \
+      | awk 'NR>1 {print $2, $1}' \
+      | sort -u
+    return 0
+  fi
+
+  if need_cmd ss; then
+    # Linux: ss -ltnp shows listening TCP with process
+    # Filter "LISTEN" lines with :port
+    # Typical line contains users:(("cmd",pid=123,fd=...))
+    ss -ltnp 2>/dev/null \
+      | awk -v p=":$port" '
+          $1=="LISTEN" && index($4,p)>0 {
+            # extract pid and process name from users:(("name",pid=123,...))
+            match($0, /users:\(\("([^"]+)",pid=([0-9]+)/, m)
+            if (m[2] != "") print m[2], m[1]
+          }' \
+      | sort -u
+    return 0
+  fi
+
+  if need_cmd netstat; then
+    # macOS: netstat -anv -p tcp  (PID/Program requires -v and may still be limited)
+    # Linux: netstat -ltnp (if net-tools installed)
+    if netstat -ltnp >/dev/null 2>&1; then
+      netstat -ltnp 2>/dev/null \
+        | awk -v p=":$port" '$4 ~ p && $6=="LISTEN" {print $7}' \
+        | awk -F/ 'NF==2 {print $1, $2}' \
+        | sort -u
+      return 0
+    fi
+
+    # macOS fallback (PID may not be available without lsof)
+    netstat -anv -p tcp 2>/dev/null \
+      | awk -v p=".$port" '$0 ~ p && $0 ~ /LISTEN/ {found=1} END{ if(!found) exit 0 }' \
+      >/dev/null || true
+
+    # If we reach here, we can't reliably get PID on macOS without lsof.
+    return 2
+  fi
+
+  return 127
+}
+
+# print PIDs only (space-separated)
+listener_pids() {
+  local port="$1"
+  local out rc
+  out="$(find_listeners "$port" 2>/dev/null)" || rc=$?
+  rc="${rc:-0}"
+
+  if [ "$rc" -eq 2 ]; then
+    echo "ERROR: PID特定に必要な 'lsof' がありません（macOSのnetstat単体だとPIDが取れないことが多いです）。" >&2
+    return 2
+  fi
+  if [ "$rc" -eq 127 ]; then
+    echo "ERROR: lsof/ss/netstat のいずれも見つかりません。" >&2
+    return 127
+  fi
+
+  # out: "PID COMMAND" per line
+  echo "$out" | awk '{print $1}' | xargs echo
+}
+
+# -------- commands --------
+cmd="${1:-}"
+shift || true
+
+case "$cmd" in
+  check)
+    port="${1:-}"
+    is_port "$port" || { usage; exit 1; }
+    if need_cmd lsof; then
+      if lsof -nP -iTCP:"$port" -sTCP:LISTEN >/dev/null 2>&1; then
+        echo "IN USE: TCP:$port is listening by:"
+        lsof -nP -iTCP:"$port" -sTCP:LISTEN
+        exit 0
+      else
+        echo "FREE: TCP:$port has no LISTEN process."
+        exit 0
+      fi
+    fi
+
+    # generic path
+    listeners="$(find_listeners "$port" 2>/dev/null || true)"
+    if [ -n "$listeners" ]; then
+      echo "IN USE: TCP:$port is listening by:"
+      echo "$listeners" | awk '{printf "PID=%s CMD=%s\n", $1, $2}'
+      exit 0
+    fi
+
+    # If macOS without lsof: might be unable to show PID, but can say "unknown"
+    if [ "${PIPESTATUS[*]:-0}" != "0" ]; then :; fi
+    echo "FREE (or undetectable): TCP:$port has no detectable LISTEN process."
+    exit 0
+    ;;
+
+  pid)
+    port="${1:-}"
+    is_port "$port" || { usage; exit 1; }
+    listener_pids "$port"
+    ;;
+
+  kill)
+    signal="TERM"
+    if [ "${1:-}" = "-9" ]; then
+      signal="KILL"
+      shift
+    elif [ "${1:-}" = "--signal" ]; then
+      shift
+      signal="${1:-TERM}"
+      shift
+    fi
+
+    port="${1:-}"
+    is_port "$port" || { usage; exit 1; }
+
+    pids="$(listener_pids "$port" || true)"
+    if [ -z "${pids// /}" ]; then
+      echo "No LISTEN process found on TCP:$port"
+      exit 0
+    fi
+
+    echo "Killing listener(s) on TCP:$port: $pids"
+
+    if [ "$signal" = "KILL" ]; then
+      # immediate
+      kill -KILL $pids 2>/dev/null || sudo kill -KILL $pids
+      exit 0
+    fi
+
+    # gentle first
+    kill -"$signal" $pids 2>/dev/null || sudo kill -"$signal" $pids
+
+    # wait a moment then SIGKILL if still alive
+    sleep 0.3
+    still=""
+    for pid in $pids; do
+      if kill -0 "$pid" 2>/dev/null; then
+        still="$still $pid"
+      fi
+    done
+
+    if [ -n "${still// /}" ]; then
+      echo "Still alive, sending SIGKILL:$still"
+      kill -KILL $still 2>/dev/null || sudo kill -KILL $still
+    fi
+    ;;
+
+  *)
+    usage
+    exit 1
+    ;;
+esac
