@@ -1,16 +1,41 @@
 # dotfiles
-dotfiles with wsl for Ubuntu-18.04
 
-# Usage
+Ubuntu用のdotfiles（bash）
+
+## Usage
+
 ```shell
 cd ~
 git clone https://github.com/monkey999por/dotfiles.git
 cd dotfiles
-source install.sh
-```  
-> when you install extentions, you must change `$IS_INSTALL_EXTENTIONS` true (default: false) and after run `install.sh`.  
-※ `$IS_INSTALL_EXTENTIONS` defined `setting.sh`  
-※ install target extentions list is defined `custom/extentions_list.sh`
+./install.sh
+```
 
-# References(Thanks to)
+## Restore
+
+```shell
+./restore.sh                           # 最新のバックアップから復元
+./restore.sh bk_defualt/2024_01_15...  # 特定のバックアップから復元
+```
+
+## Structure
+
+```
+dotfiles/
+├── install.sh          # インストールスクリプト
+├── restore.sh          # 復元スクリプト
+├── custom_commands/    # カスタムコマンド（PATHに追加される）
+└── dotfiles/           # ドットファイル
+    ├── .bashrc
+    ├── .bash_aliases
+    ├── .profile
+    ├── .shrc_common
+    ├── .git-prompt.sh
+    ├── .gitconfig
+    ├── .nanorc
+    └── .vimrc
+```
+
+## References
+
 [mathiasbynens's](https://github.com/mathiasbynens) dotfiles repository

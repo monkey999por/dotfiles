@@ -1,155 +1,96 @@
-# ~/.bashrc: executed by bash(1) for non-login shells.
-# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
-# for examples
+# ~/.bashrc: bash用設定ファイル
 
-# If not running interactively, don't do anything
+# 非対話モードでは何もしない
 case $- in
     *i*) ;;
       *) return;;
 esac
 
-# don't put duplicate lines or lines starting with space in the history.
-# See bash(1) for more options
-HISTCONTROL=ignoreboth
+# ============================================
+# bash固有オプション
+# ============================================
+shopt -s histappend         # 履歴ファイルに追記
+shopt -s checkwinsize       # ウィンドウサイズを確認
 
-# append to the history file, don't overwrite it
-shopt -s histappend
+# ============================================
+# 履歴設定
+# ============================================
+HISTFILE=~/.bash_history
+HISTCONTROL=ignoreboth      # 重複とスペース始まりを無視
 
-# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
-HISTSIZE=1000
-HISTFILESIZE=2000
+# ============================================
+# 共通設定読み込み
+# ============================================
+if [ -f ~/.shrc_common ]; then
+    . ~/.shrc_common
+fi
 
-# check the window size after each command and, if necessary,
-# update the values of LINES and COLUMNS.
-shopt -s checkwinsize
-
-# If set, the pattern "**" used in a pathname expansion context will
-# match all files and zero or more directories and subdirectories.
-#shopt -s globstar
-
-# make less more friendly for non-text input files, see lesspipe(1)
+# ============================================
+# lesspipe
+# ============================================
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
-# set variable identifying the chroot you work in (used in the prompt below)
+# ============================================
+# Git設定
+# ============================================
+# git-prompt.sh の読み込み
+if [ -f ~/.git-prompt.sh ]; then
+    . ~/.git-prompt.sh
+fi
+
+# ============================================
+# 補完設定
+# ============================================
+if ! shopt -oq posix; then
+    if [ -f /usr/share/bash-completion/bash_completion ]; then
+        . /usr/share/bash-completion/bash_completion
+    elif [ -f /etc/bash_completion ]; then
+        . /etc/bash_completion
+    fi
+fi
+
+# ============================================
+# プロンプト設定
+# ============================================
+# debian chroot対応
 if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
     debian_chroot=$(cat /etc/debian_chroot)
 fi
 
-# set a fancy prompt (non-color, unless we know we "want" color)
-case "$TERM" in
-    xterm-color|*-256color) color_prompt=yes;;
-esac
-
-# uncomment for a colored prompt, if the terminal has the capability; turned
-# off by default to not distract the user: the focus in a terminal window
-# should be on the output of commands, not on the prompt
-#force_color_prompt=yes
-
-if [ -n "$force_color_prompt" ]; then
-    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-	# We have color support; assume it's compliant with Ecma-48
-	# (ISO/IEC-6429). (Lack of such support is extremely rare, and such
-	# a case would tend to support setf rather than setaf.)
-	color_prompt=yes
-    else
-	color_prompt=
-    fi
-fi
-
-if [ "$color_prompt" = yes ]; then
-    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+# カスタムプロンプト
+if type __git_ps1 &>/dev/null; then
+    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u\[\033[01;35m\]@\[\033[01;36m\]\h\[\033[00m\]: \[\033[01;34m\]\w\[\033[1;31m\]$(__git_ps1 " (%s)")\[\033[00m\]\n\[\e]0;\u@\h: \w\a\]$(echo -e "\U1F49B\U1F499\U1F49A\U1F49C") '
 else
-    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
-fi
-unset color_prompt force_color_prompt
-
-# If this is an xterm set the title to user@host:dir
-case "$TERM" in
-xterm*|rxvt*)
-    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
-    ;;
-*)
-    ;;
-esac
-
-# enable color support of ls and also add handy aliases
-if [ -x /usr/bin/dircolors ]; then
-    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-    alias ls='ls --color=auto'
-    #alias dir='dir --color=auto'
-    #alias vdir='vdir --color=auto'
-
-    alias grep='grep --color=auto'
-    alias fgrep='fgrep --color=auto'
-    alias egrep='egrep --color=auto'
+    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u\[\033[01;35m\]@\[\033[01;36m\]\h\[\033[00m\]: \[\033[01;34m\]\w\[\033[00m\]\n\[\e]0;\u@\h: \w\a\]$(echo -e "\U1F49B\U1F499\U1F49A\U1F49C") '
 fi
 
-# colored GCC warnings and errors
-#export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
-
-# some more ls aliases
-alias ll='ls -alF'
-alias la='ls -A'
-alias l='ls -CF'
-
-# Add an "alert" alias for long running commands.  Use like so:
-#   sleep 10; alert
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
-
-# Alias definitions.
-# You may want to put all your additions into a separate file like
-# ~/.bash_aliases, instead of adding them here directly.
-# See /usr/share/doc/bash-doc/examples in the bash-doc package.
-
-if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
+# ============================================
+# dotnet補完（bash用）
+# ============================================
+if command -v dotnet &>/dev/null; then
+    _dotnet_bash_complete() {
+        local word=${COMP_WORDS[COMP_CWORD]}
+        local completions
+        completions="$(dotnet complete --position "${COMP_POINT}" "${COMP_LINE}" 2>/dev/null)"
+        if [ $? -ne 0 ]; then
+            completions=""
+        fi
+        COMPREPLY=( $(compgen -W "$completions" -- "$word") )
+    }
+    complete -f -F _dotnet_bash_complete dotnet
 fi
 
-# enable programmable completion features (you don't need to enable
-# this, if it's already enabled in /etc/bash.bashrc and /etc/profile
-# sources /etc/bash.bashrc).
-if ! shopt -oq posix; then
-  if [ -f /usr/share/bash-completion/bash_completion ]; then
-    . /usr/share/bash-completion/bash_completion
-  elif [ -f /etc/bash_completion ]; then
-    . /etc/bash_completion
-  fi
+# ============================================
+# エイリアス設定
+# ============================================
+if [ -f "${HOME}/.bash_aliases" ]; then
+    . "${HOME}/.bash_aliases"
 fi
 
-# enable custom command
-if [ -d ${HOME}/dotfiles/bin/ ]; then
- for c in $(ls -aAl --format=single-column ${HOME}/dotfiles/bin/); do
-  . "${HOME}/dotfiles/bin/$c"
- done
+# ============================================
+# カスタムコマンド
+# ============================================
+# install.sh が生成したパス設定を読み込む
+if [ -f "${HOME}/.bash_custom_commands" ]; then
+    . "${HOME}/.bash_custom_commands"
 fi
-
-# git completion
-# wget https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash -O ${HOME}/.git-completion.bash
-# wget https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh -O ${HOME}/.git-prompt.sh
-. ${HOME}/.git-completion.bash
-. ${HOME}/.git-prompt.sh
-GIT_PS1_SHOWDIRTYSTATE=1
-GIT_PS1_SHOWUPSTREAM=1
-GIT_PS1_SHOWUNTRACKEDFILES=1
-GIT_PS1_SHOWSTASHSTATE=1
-
-# custom prompt
-export PS1='\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u\[\033[01;35m\]@\[\033[01;36m\]\h\[\033[00m\]: \[\033[01;34m\]\w\[\033[1;31m\]$(__git_ps1 " (%s)")\[\033[00m\]\n`echo -e "\U1F49B\U1F499\U1F49A\U1F49C"` '
-
-
-# bash parameter completion for the dotnet CLI
-# ref: https://docs.microsoft.com/ja-jp/dotnet/core/tools/enable-tab-autocomplete
-_dotnet_bash_complete()
-{
-  local word=${COMP_WORDS[COMP_CWORD]}
-
-  local completions
-  completions="$(dotnet complete --position "${COMP_POINT}" "${COMP_LINE}" 2>/dev/null)"
-  if [ $? -ne 0 ]; then
-    completions=""
-  fi
-
-  COMPREPLY=( $(compgen -W "$completions" -- "$word") )
-}
-
-complete -f -F _dotnet_bash_complete dotnet

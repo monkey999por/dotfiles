@@ -1,0 +1,16 @@
+# ~/.shrc_common: bash共通設定
+
+# ============================================
+# 履歴設定（共通部分）
+# ============================================
+HISTSIZE=1000
+HISTFILESIZE=2000
+
+
+# ============================================
+# Git設定
+# ============================================
+GIT_PS1_SHOWDIRTYSTATE=1
+GIT_PS1_SHOWUPSTREAM=1
+GIT_PS1_SHOWUNTRACKEDFILES=1
+GIT_PS1_SHOWSTASHSTATE=1
