@@ -94,3 +94,18 @@ fi
 if [ -f "${HOME}/.bash_custom_commands" ]; then
     . "${HOME}/.bash_custom_commands"
 fi
+
+complete -f -F _dotnet_bash_complete dotnet
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+. "/home/monkey999/.deno/env"
+. "$HOME/.cargo/env"
+./wsl/WSLHostPatcher.exe
+
+# pnpm
+export PNPM_HOME="/home/monkey999/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
