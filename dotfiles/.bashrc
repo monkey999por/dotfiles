@@ -65,22 +65,6 @@ else
 fi
 
 # ============================================
-# dotnet補完（bash用）
-# ============================================
-if command -v dotnet &>/dev/null; then
-    _dotnet_bash_complete() {
-        local word=${COMP_WORDS[COMP_CWORD]}
-        local completions
-        completions="$(dotnet complete --position "${COMP_POINT}" "${COMP_LINE}" 2>/dev/null)"
-        if [ $? -ne 0 ]; then
-            completions=""
-        fi
-        COMPREPLY=( $(compgen -W "$completions" -- "$word") )
-    }
-    complete -f -F _dotnet_bash_complete dotnet
-fi
-
-# ============================================
 # エイリアス設定
 # ============================================
 if [ -f "${HOME}/.bash_aliases" ]; then
@@ -95,16 +79,22 @@ if [ -f "${HOME}/.bash_custom_commands" ]; then
     . "${HOME}/.bash_custom_commands"
 fi
 
-complete -f -F _dotnet_bash_complete dotnet
+# ============================================
+# 環境固有設定（自動追加分）
+# ============================================
+# nvm
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-. "/home/monkey999/.deno/env"
-. "$HOME/.cargo/env"
-./wsl/WSLHostPatcher.exe
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+# deno
+[ -f "$HOME/.deno/env" ] && . "$HOME/.deno/env"
+
+# cargo
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
 
 # pnpm
-export PNPM_HOME="/home/monkey999/.local/share/pnpm"
+export PNPM_HOME="$HOME/.local/share/pnpm"
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;

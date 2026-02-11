@@ -40,6 +40,6 @@ alias f='find . -type f -iname'
 #ファイル内容で検索
 alias g='grep -RIn'
 
-# claude 
-alias sclaude='claude --allow-dangerously-skip-permissions'
+# claude code
+alias sclaude='claude --dangerously-skip-permissions'
 alias fclaude='claude --permission-mode acceptEdits'

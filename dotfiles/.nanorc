@@ -3,9 +3,6 @@ set autoindent
 set linenumbers
 set mouse
 set softwrap
-set backup
-set backupdir ~/Main.d/DustBox.d
-
 
 # {lang}.nanorc files that have improved definitions of syntax highlighting for various languages.
 # ref https://github.com/scopatz/nanorc
